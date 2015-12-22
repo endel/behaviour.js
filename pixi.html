@@ -1,0 +1,65 @@
+<html>
+  <head>
+    <title>behaviour.js - Plugable Entity Component System for Games</title>
+    <script src="dist/behaviour.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/3.0.8/pixi.js"></script>
+    <style>* { margin: 0; padding: 0; }</style>
+  </head>
+  <body>
+  <script type="text/javascript">
+    // Create component system
+    var componentSystem = ECS.createComponentSystem(PIXI.DisplayObject);
+
+    function RotationBehaviour() {}
+
+    // class RotationBehaviour extends Behaviour
+    RotationBehaviour.prototype = Object.create( ECS.Behaviour.prototype );
+    RotationBehaviour.prototype.constructor = RotationBehaviour;
+
+    RotationBehaviour.prototype.onAttach = function() {
+      console.log("RotationBehaviour has been attached into: ", this.object)
+    }
+
+    RotationBehaviour.prototype.update = function() {
+      this.object.rotation += 0.1;
+    }
+
+    var renderer = PIXI.autoDetectRenderer(800, 600,{backgroundColor : 0x1099bb});
+    document.body.appendChild(renderer.view);
+
+    // create the root of the scene graph
+    var stage = new PIXI.Container();
+
+    // create a texture from an image path
+    var texture = PIXI.Texture.fromImage('http://pixijs.github.io/examples/_assets/basics/bunny.png'); // https://crossorigin.me/
+
+    // create a new Sprite using the texture
+    var bunny = new PIXI.Sprite(texture);
+
+    // center the sprite's anchor point
+    bunny.anchor.x = 0.5;
+    bunny.anchor.y = 0.5;
+
+    // move the sprite to the center of the screen
+    bunny.position.x = 200;
+    bunny.position.y = 150;
+
+    // Attach behaviour to box mesh
+    bunny.behave(new RotationBehaviour)
+
+    stage.addChild(bunny);
+
+    // start animating
+    animate();
+    function animate() {
+        requestAnimationFrame(animate);
+
+        componentSystem.update()
+
+        // render the container
+        renderer.render(stage);
+    }
+  </script>
+  </body>
+</html>
+

@@ -1,0 +1,40 @@
+{
+  "name": "behaviour.js",
+  "version": "0.1.0",
+  "description": "Plugable Entity Component System for Games",
+  "main": "lib/index.js",
+  "scripts": {
+    "dist": "browserify src/index.js -t babelify -s ECS -o dist/behavior.js && browserify src/index.js -t babelify -t uglifyify -s ECS -o dist/behaviour.min.js",
+    "test": "mocha --compilers js:babel-register",
+    "prepublish": "babel src -d lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gamestdio/behaviour.js.git"
+  },
+  "keywords": [
+    "entity",
+    "component",
+    "system",
+    "ecs",
+    "behaviour"
+  ],
+  "author": "Endel Dreyer",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gamestdio/behaviour.js/issues"
+  },
+  "homepage": "https://github.com/gamestdio/behaviour.js#readme",
+  "devDependencies": {
+    "babel-cli": "^6.1.2",
+    "babel-preset-es2015": "^6.1.2",
+    "babelify": "^7.2.0",
+    "browserify": "^12.0.1",
+    "mocha": "^2.3.3",
+    "uglifyify": "^3.0.1",
+    "assert": "^1.3.0"
+  },
+  "dependencies": {
+    "tiny-emitter": "^1.0.2"
+  }
+}
