@@ -10,7 +10,11 @@ class DummyBaseObject {
 }
 
 class DummyBehaviour extends Behaviour {
-  onAttach () { this.attribute = 10 }
+  onAttach (param1, param2) {
+    this.attribute = 10;
+    this.param1 = param1;
+    this.param2 = param2;
+  }
   onDestroy () { }
 }
 
@@ -40,6 +44,15 @@ describe('System', function() {
       object.behave(new DummyBehaviour)
 
       assert.equal(Object.keys(system.entities).length, 1)
+    })
+
+    it ('should call onAttach with parameters given on #behave method', function() {
+      var object = new DummyBaseObject()
+      var behaviour = new DummyBehaviour
+      object.behave(behaviour, 1, 2)
+
+      assert.equal(behaviour.param1, 1)
+      assert.equal(behaviour.param2, 2)
     })
   })
 

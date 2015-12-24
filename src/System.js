@@ -33,7 +33,8 @@ class System {
         system.add(this.__ENTITY__)
       }
 
-      this.__ENTITY__.attach(behaviourClass, options)
+      var args = Array.prototype.splice.apply(arguments, [1])
+      this.__ENTITY__.attach(behaviourClass, args)
     }
   }
 

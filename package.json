@@ -1,8 +1,9 @@
 {
   "name": "behaviour.js",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Plugable Entity Component System for Games",
   "main": "lib/index.js",
+  "jsnext:main": "src/index.js",
   "scripts": {
     "dist": "browserify src/index.js -t babelify -s ECS -o dist/behavior.js && browserify src/index.js -t babelify -t uglifyify -s ECS -o dist/behaviour.min.js",
     "test": "mocha --compilers js:babel-register",

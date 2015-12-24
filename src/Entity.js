@@ -13,12 +13,13 @@ class Entity extends EventEmitter {
     this.behaviours = []
   }
 
-  attach (behaviour, options) {
+  attach (behaviour, args) {
     this.behaviours.push(behaviour)
 
     behaviour.attach( this )
     behaviour.on('destroy', this.onDestroyBehaviour.bind(this, behaviour))
-    behaviour.onAttach(options)
+
+    behaviour.onAttach.apply(behaviour, args)
   }
 
   detach (klass) {
