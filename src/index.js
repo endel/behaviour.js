@@ -3,9 +3,9 @@
 var Behaviour = require('./Behaviour')
   , System = require('./System')
 
-module.exports.createComponentSystem = function createComponentSystem (klass, methodName) {
+module.exports.createComponentSystem = function createComponentSystem (klass, options = {}) {
   var system = new System()
-  system.mount( klass, methodName )
+  system.mount( klass, options )
   return system
 }
 

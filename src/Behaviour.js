@@ -1,12 +1,8 @@
 'use strict';
 
-var EventEmitter = require('tiny-emitter')
-
-class Behaviour extends EventEmitter {
+class Behaviour {
 
   constructor () {
-    super()
-
     this.entity = null
     this.object = null
   }
@@ -17,11 +13,17 @@ class Behaviour extends EventEmitter {
   }
 
   onAttach(options) {  }
-  onDestroy() {  }
+  onDetach() {  }
 
   destroy () {
     this.emit('destroy')
   }
+
+  // delegate EventEmitter events from it's Entity
+  on () { this.entity.on.apply(this.entity, arguments) }
+  once() { this.entity.once.apply(this.entity, arguments) }
+  off() { this.entity.off.apply(this.entity, arguments) }
+  emit() { this.entity.emit.apply(this.entity, arguments) }
 
 }
 

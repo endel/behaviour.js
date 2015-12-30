@@ -21,7 +21,7 @@ you'll be able to attach custom behaviours directly into your objects.
 
 ```javascript
 import { createComponentSystem, Behaviour } from 'behaviour.js'
-var componentSystem = createComponentSystem(THREE.Object3D, 'behave')
+var componentSystem = createComponentSystem(THREE.Object3D)
 
 // Define your custom behaviour
 class CustomBehaviour extends Behaviour {
@@ -37,7 +37,7 @@ class CustomBehaviour extends Behaviour {
 
 // Attach the behaviour into your objects
 var object = new THREE.Object3D()
-object.behave(new CustomBehaviour())
+object.addBehaviour(new CustomBehaviour())
 
 function animate() {
   componentSystem.update()
@@ -65,7 +65,7 @@ Behaviour's `onAttach` callback.
 **Callbacks**
 
 - `onAttach` - *called after being attached in a target object*
-- `onDestroy` - *called after being manually destroyed (through `destroy` method)*
+- `onDetach` - *called after being manually detached (through `entity.detach` method)*
 - `update` - *called when your component system is updated*
 
 **Methods**

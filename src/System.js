@@ -19,27 +19,36 @@ class System {
     }
   }
 
-  mount (baseClass, methodName) {
-    if (!methodName) { methodName = 'behave' }
+  mount (baseClass, options = {}) {
+    if (!options.addBehaviour) options.addBehaviour = 'addBehaviour'
+    if (!options.getEntity) options.getEntity = 'getEntity'
 
     this.baseClass = baseClass
-    this.methodName = methodName
+    this.mountOptions = options
 
     var system = this
 
-    this.baseClass.prototype[ methodName ] = function(behaviourClass, options) {
+    this.baseClass.prototype[ options.getEntity ] = function() {
       if (!this.__ENTITY__) {
         this.__ENTITY__ = new Entity(this, system.objectId++)
         system.add(this.__ENTITY__)
       }
+      return this.__ENTITY__
+    }
+
+    this.baseClass.prototype[ options.addBehaviour ] = function(behaviourClass) {
+      var entity = this[ options.getEntity ]()
 
       var args = Array.prototype.splice.apply(arguments, [1])
-      this.__ENTITY__.attach(behaviourClass, args)
+      entity.attach(behaviourClass, args)
+
+      return entity
     }
   }
 
   destroy () {
-    delete this.baseClass.prototype[ this.methodName ]
+    delete this.baseClass.prototype[ this.mountOptions.addBehaviour ]
+    delete this.baseClass.prototype[ this.mountOptions.getEntity ]
   }
 
 }

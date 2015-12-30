@@ -21,11 +21,11 @@ class DummyBehaviour extends Behaviour {
 describe('System', function() {
 
   describe('createComponentSystem', function () {
-    var system = createComponentSystem(DummyBaseObject, 'addBehaviour')
+    var system = createComponentSystem(DummyBaseObject, { addBehaviour: 'behave', getEntity: 'entity' })
 
     it('#mount', function () {
       var object = new DummyBaseObject()
-      assert.equal(typeof(object.addBehaviour), "function")
+      assert.equal(typeof(object.behave), "function")
     });
 
     it('#destroy', function() {
@@ -41,7 +41,7 @@ describe('System', function() {
 
     it ('should create and add entity when #behave is called', function() {
       var object = new DummyBaseObject()
-      object.behave(new DummyBehaviour)
+      object.addBehaviour(new DummyBehaviour)
 
       assert.equal(Object.keys(system.entities).length, 1)
     })
@@ -49,7 +49,7 @@ describe('System', function() {
     it ('should call onAttach with parameters given on #behave method', function() {
       var object = new DummyBaseObject()
       var behaviour = new DummyBehaviour
-      object.behave(behaviour, 1, 2)
+      object.addBehaviour(behaviour, 1, 2)
 
       assert.equal(behaviour.param1, 1)
       assert.equal(behaviour.param2, 2)

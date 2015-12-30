@@ -17,19 +17,14 @@ class Entity extends EventEmitter {
     this.behaviours.push(behaviour)
 
     behaviour.attach( this )
-    behaviour.on('destroy', this.onDestroyBehaviour.bind(this, behaviour))
-
     behaviour.onAttach.apply(behaviour, args)
   }
 
-  detach (klass) {
-  }
-
-  onDestroyBehaviour (behaviour) {
+  detach (behaviour) {
     var index = this.behaviours.indexOf(behaviour)
     if (index !== -1) {
       this.behaviours.splice(index, 1)
-      behaviour.onDestroy()
+      behaviour.onDetach()
     }
   }
 
