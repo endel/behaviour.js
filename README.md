@@ -33,6 +33,10 @@ class CustomBehaviour extends Behaviour {
     console.log("Let's do something with this object", this.object)
     this.object.rotation += 0.1
   }
+
+  onDetach () {
+    console.log("CustomBehaviour has been detached from ", this.object)
+  }
 }
 
 // Attach the behaviour into your objects
@@ -44,16 +48,25 @@ function animate() {
 
   // render your application
   // ...
+  requestAnimationFrame( animate );
 }
 ```
 
 API
 ---
 
-Behaviours and Entities have `emit`/`on`/`once`/`off` methods. They subclass
-[EventEmitters](https://github.com/scottcorgan/tiny-emitter#instance-methods).
-A handy way to communicate between behaviours is listening to `entity` events in
-Behaviour's `onAttach` callback.
+Entities are a sublcass of
+[EventEmitters](https://github.com/scottcorgan/tiny-emitter#instance-methods),
+they have `emit`/`on`/`once`/`off` methods. A handy way to communicate
+between behaviours is listening to events in Behaviour's `onAttach`
+callback.
+
+### Object (THREE.Object, PIXI.DisplayObject, etc)
+
+**Methods**
+
+- `getEntity()` - Get Entity instance attached to the object.
+- `addBehaviour(behaviour, options)` - Attach custom behaviour to this entity
 
 ### Behaviour
 
@@ -70,7 +83,24 @@ Behaviour's `onAttach` callback.
 
 **Methods**
 
-- `destroy`
+- `detach`
+- `on(event, callback[, context])` - *alias to `entity.on`*
+- `once(event, callback[, context])` - *alias to `entity.once`*
+- `off(event[, callback])` - *alias to `entity.off`*
+- `emit(event[, arguments...])` - *alias to `entity.emit`*
+
+### Entity
+
+**Properties**
+
+- `object` - *Object which this behaviour was attached*
+- `behaviours` - *Array of behaviour instances*
+
+**Methods**
+
+- `attach(behaviour)` - *Attach behaviour instance to this Entity*
+- `detach(behaviour)` - *Detach behaviour instance to this Entity*
+- `destroy` - *Detach all behaviours from this Entity and remove it from the System*
 
 License
 ---

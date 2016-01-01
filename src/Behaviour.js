@@ -15,8 +15,8 @@ class Behaviour {
   onAttach(options) {  }
   onDetach() {  }
 
-  destroy () {
-    this.emit('destroy')
+  detach () {
+    this.emit('detach', this)
   }
 
   // delegate EventEmitter events from it's Entity

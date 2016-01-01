@@ -11,6 +11,7 @@ class Entity extends EventEmitter {
     this.object = object
 
     this.behaviours = []
+    this.on('detach', this.detach.bind(this))
   }
 
   attach (behaviour, args) {
@@ -22,6 +23,7 @@ class Entity extends EventEmitter {
 
   detach (behaviour) {
     var index = this.behaviours.indexOf(behaviour)
+
     if (index !== -1) {
       this.behaviours.splice(index, 1)
       behaviour.onDetach()
@@ -37,6 +39,9 @@ class Entity extends EventEmitter {
     }
   }
 
+  destroy () {
+    this.emit('destroy')
+  }
 
 }
 
