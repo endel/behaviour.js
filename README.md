@@ -61,7 +61,10 @@ they have `emit`/`on`/`once`/`off` methods. A handy way to communicate
 between behaviours is listening to events in Behaviour's `onAttach`
 callback.
 
-### Object (THREE.Object, PIXI.DisplayObject, etc)
+### Object
+
+These methods are injected on all instances of the base object you provided on
+`createComponentSystem` (e.g. `THREE.Object`, `PIXI.DisplayObject`, etc)
 
 **Methods**
 
@@ -101,6 +104,10 @@ callback.
 - `attach(behaviour)` - *Attach behaviour instance to this Entity*
 - `detach(behaviour)` - *Detach behaviour instance to this Entity*
 - `destroy` - *Detach all behaviours from this Entity and remove it from the System*
+- `on(event, callback[, context])` - *Subscribe to an event*
+- `once(event, callback[, context])` - *Subscribe to an event only once*
+- `off(event[, callback])` - *Unsubscribe from an event or all events. If no callback is provided, it unsubscribes you from all events.*
+- `emit(event[, arguments...])` - *Trigger a named event*
 
 License
 ---
