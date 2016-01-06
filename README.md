@@ -101,8 +101,9 @@ These methods are injected on all instances of the base object you provided on
 
 **Methods**
 
-- `attach(behaviour)` - *Attach behaviour instance to this Entity*
-- `detach(behaviour)` - *Detach behaviour instance to this Entity*
+- `attach(behaviour)` - *Attach behaviour instance into this Entity*
+- `detach(behaviour)` - *Detach behaviour instance from this Entity*
+- `detachAll` - *Detach all behaviours from this Entity*
 - `destroy` - *Detach all behaviours from this Entity and remove it from the System*
 - `on(event, callback[, context])` - *Subscribe to an event*
 - `once(event, callback[, context])` - *Subscribe to an event only once*

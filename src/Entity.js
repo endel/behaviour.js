@@ -30,6 +30,11 @@ class Entity extends EventEmitter {
     }
   }
 
+  detachAll () {
+    var i = this.behaviours.length;
+    while (i--) this.detach(this.behaviours[i])
+  }
+
   update () {
     var i = this.behaviours.length;
     while (i--) {
@@ -40,6 +45,7 @@ class Entity extends EventEmitter {
   }
 
   destroy () {
+    this.detachAll()
     this.emit('destroy')
   }
 

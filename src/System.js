@@ -11,13 +11,7 @@ class System {
 
   add (entity) {
     this.entities[ entity.id ] = entity
-
     entity.on('destroy', this.onEntityDestroy.bind(this, entity))
-  }
-
-  onEntityDestroy (entity) {
-    entity.behaviours.forEach(behaviour => entity.detach(behaviour))
-    delete this.entities[ entity.id ]
   }
 
   update () {
@@ -51,6 +45,10 @@ class System {
 
       return entity
     }
+  }
+
+  onEntityDestroy (entity) {
+    delete this.entities[ entity.id ]
   }
 
   destroy () {

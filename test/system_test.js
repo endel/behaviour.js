@@ -84,4 +84,23 @@ describe('System', function() {
     })
   })
 
+  describe('Behaviour#detachAll', function() {
+    it ('should detach behaviour from entity', function() {
+      var object = new DummyBaseObject()
+      var entity = object.getEntity()
+
+      var b1 = new DummyBehaviour
+      object.addBehaviour(b1, 1, 2)
+      var b2 = new DummyBehaviour
+      object.addBehaviour(b2, 1, 2)
+      var b3 = new DummyBehaviour
+      object.addBehaviour(b3, 1, 2)
+
+      assert.equal(entity.behaviours.length, 3)
+
+      entity.detachAll()
+      assert.equal(entity.behaviours.length, 0)
+    })
+  })
+
 });
