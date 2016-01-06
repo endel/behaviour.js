@@ -5,6 +5,8 @@ class Behaviour {
   constructor () {
     this.entity = null
     this.object = null
+
+    this._callbacks = []
   }
 
   attach (entity) {
@@ -17,11 +19,24 @@ class Behaviour {
 
   detach () {
     this.emit('detach', this)
+
+    // clear all callbacks this behaviour registered
+    for (var i=0; i<this._callbacks.length; i++) {
+      this.off.apply(this, this._callbacks[i])
+    }
   }
 
   // delegate EventEmitter events from it's Entity
-  on () { this.entity.on.apply(this.entity, arguments) }
-  once() { this.entity.once.apply(this.entity, arguments) }
+  on () {
+    this._callbacks.push(arguments)
+    this.entity.on.apply(this.entity, arguments)
+  }
+
+  once() {
+    this._callbacks.push(arguments)
+    this.entity.once.apply(this.entity, arguments)
+  }
+
   off() { this.entity.off.apply(this.entity, arguments) }
   emit() { this.entity.emit.apply(this.entity, arguments) }
 
