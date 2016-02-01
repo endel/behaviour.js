@@ -1,6 +1,6 @@
 {
   "name": "behaviour.js",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Plugable Entity Component System for Games",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",

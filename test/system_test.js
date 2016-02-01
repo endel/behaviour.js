@@ -70,6 +70,36 @@ describe('System', function() {
     })
   })
 
+  describe('Entity#getBehaviour', function() {
+    it ('should get behaviour by name', function() {
+      var object = new DummyBaseObject()
+      var behaviour = new DummyBehaviour
+      object.addBehaviour(behaviour, 1, 2)
+
+      var entity = object.getEntity()
+
+      var behaviourByName = entity.getBehaviour('DummyBehaviour')
+      assert.equal(behaviourByName, behaviour)
+
+      var behaviourByName = entity.getBehaviour('non-existent')
+      assert.equal(behaviourByName, null)
+    })
+
+    it ('should get behaviour by class', function() {
+      var object = new DummyBaseObject()
+      var behaviour = new DummyBehaviour
+      object.addBehaviour(behaviour, 1, 2)
+
+      var entity = object.getEntity()
+
+      var behaviourByClassSuccess = entity.getBehaviour(DummyBehaviour)
+      assert.equal(behaviourByClassSuccess, behaviour)
+
+      var behaviourByClassFail = entity.getBehaviour(DummyBaseObject)
+      assert.equal(behaviourByClassFail, null)
+    })
+  })
+
   describe('Behaviour#detach', function() {
     it ('should detach behaviour from entity', function() {
       var object = new DummyBaseObject()

@@ -73,23 +73,14 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var EventEmitter = require('tiny-emitter');
-
-var Behaviour = (function (_EventEmitter) {
-  _inherits(Behaviour, _EventEmitter);
-
+var Behaviour = (function () {
   function Behaviour() {
     _classCallCheck(this, Behaviour);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Behaviour).call(this));
+    this.entity = null;
+    this.object = null;
 
-    _this.entity = null;
-    _this.object = null;
-    return _this;
+    this._callbacks = [];
   }
 
   _createClass(Behaviour, [{
@@ -102,21 +93,51 @@ var Behaviour = (function (_EventEmitter) {
     key: 'onAttach',
     value: function onAttach(options) {}
   }, {
-    key: 'onDestroy',
-    value: function onDestroy() {}
+    key: 'onDetach',
+    value: function onDetach() {}
   }, {
-    key: 'destroy',
-    value: function destroy() {
-      this.emit('destroy');
+    key: 'detach',
+    value: function detach() {
+      this.emit('detach', this);
+
+      // clear all callbacks this behaviour registered
+      for (var i = 0; i < this._callbacks.length; i++) {
+        this.off.apply(this, this._callbacks[i]);
+      }
+    }
+
+    // delegate EventEmitter events from it's Entity
+
+  }, {
+    key: 'on',
+    value: function on() {
+      this._callbacks.push(arguments);
+      this.entity.on.apply(this.entity, arguments);
+    }
+  }, {
+    key: 'once',
+    value: function once() {
+      this._callbacks.push(arguments);
+      this.entity.once.apply(this.entity, arguments);
+    }
+  }, {
+    key: 'off',
+    value: function off() {
+      this.entity.off.apply(this.entity, arguments);
+    }
+  }, {
+    key: 'emit',
+    value: function emit() {
+      this.entity.emit.apply(this.entity, arguments);
     }
   }]);
 
   return Behaviour;
-})(EventEmitter);
+})();
 
 module.exports = Behaviour;
 
-},{"tiny-emitter":1}],3:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -141,28 +162,46 @@ var Entity = (function (_EventEmitter) {
     _this.object = object;
 
     _this.behaviours = [];
+    _this.on('detach', _this.detach.bind(_this));
     return _this;
   }
 
   _createClass(Entity, [{
+    key: 'getBehaviour',
+    value: function getBehaviour(nameOrClass) {
+      var isName = typeof nameOrClass === "string",
+          filterByName = function filterByName(b) {
+        return b.constructor.name === nameOrClass;
+      },
+          filterByClass = function filterByClass(b) {
+        return b.constructor.name === nameOrClass.name;
+      };
+      return this.behaviours.filter(isName ? filterByName : filterByClass)[0];
+    }
+  }, {
     key: 'attach',
-    value: function attach(behaviour, options) {
+    value: function attach(behaviour, args) {
       this.behaviours.push(behaviour);
 
       behaviour.attach(this);
-      behaviour.on('destroy', this.onDestroyBehaviour.bind(this, behaviour));
-      behaviour.onAttach(options);
+      behaviour.onAttach.apply(behaviour, args);
     }
   }, {
     key: 'detach',
-    value: function detach(klass) {}
-  }, {
-    key: 'onDestroyBehaviour',
-    value: function onDestroyBehaviour(behaviour) {
+    value: function detach(behaviour) {
       var index = this.behaviours.indexOf(behaviour);
+
       if (index !== -1) {
         this.behaviours.splice(index, 1);
-        behaviour.onDestroy();
+        behaviour.onDetach();
+      }
+    }
+  }, {
+    key: 'detachAll',
+    value: function detachAll() {
+      var i = this.behaviours.length;
+      while (i--) {
+        this.detach(this.behaviours[i]);
       }
     }
   }, {
@@ -174,6 +213,12 @@ var Entity = (function (_EventEmitter) {
           this.behaviours[i].update();
         }
       }
+    }
+  }, {
+    key: 'destroy',
+    value: function destroy() {
+      this.detachAll();
+      this.emit('destroy');
     }
   }]);
 
@@ -203,6 +248,7 @@ var System = (function () {
     key: 'add',
     value: function add(entity) {
       this.entities[entity.id] = entity;
+      entity.on('destroy', this.onEntityDestroy.bind(this, entity));
     }
   }, {
     key: 'update',
@@ -213,29 +259,44 @@ var System = (function () {
     }
   }, {
     key: 'mount',
-    value: function mount(baseClass, methodName) {
-      if (!methodName) {
-        methodName = 'behave';
-      }
+    value: function mount(baseClass) {
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      if (!options.addBehaviour) options.addBehaviour = 'addBehaviour';
+      if (!options.getEntity) options.getEntity = 'getEntity';
 
       this.baseClass = baseClass;
-      this.methodName = methodName;
+      this.mountOptions = options;
 
       var system = this;
 
-      this.baseClass.prototype[methodName] = function (behaviourClass, options) {
+      this.baseClass.prototype[options.getEntity] = function () {
         if (!this.__ENTITY__) {
           this.__ENTITY__ = new Entity(this, system.objectId++);
           system.add(this.__ENTITY__);
         }
-
-        this.__ENTITY__.attach(behaviourClass, options);
+        return this.__ENTITY__;
       };
+
+      this.baseClass.prototype[options.addBehaviour] = function (behaviourClass) {
+        var entity = this[options.getEntity]();
+
+        var args = Array.prototype.splice.apply(arguments, [1]);
+        entity.attach(behaviourClass, args);
+
+        return entity;
+      };
+    }
+  }, {
+    key: 'onEntityDestroy',
+    value: function onEntityDestroy(entity) {
+      delete this.entities[entity.id];
     }
   }, {
     key: 'destroy',
     value: function destroy() {
-      delete this.baseClass.prototype[this.methodName];
+      delete this.baseClass.prototype[this.mountOptions.addBehaviour];
+      delete this.baseClass.prototype[this.mountOptions.getEntity];
     }
   }]);
 
@@ -250,9 +311,11 @@ module.exports = System;
 var Behaviour = require('./Behaviour'),
     System = require('./System');
 
-module.exports.createComponentSystem = function createComponentSystem(klass, methodName) {
+module.exports.createComponentSystem = function createComponentSystem(klass) {
+  var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
   var system = new System();
-  system.mount(klass, methodName);
+  system.mount(klass, options);
   return system;
 };
 

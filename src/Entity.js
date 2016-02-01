@@ -14,6 +14,13 @@ class Entity extends EventEmitter {
     this.on('detach', this.detach.bind(this))
   }
 
+  getBehaviour (nameOrClass) {
+    var isName = typeof(nameOrClass)==="string"
+      , filterByName = (b) => b.constructor.name === nameOrClass
+      , filterByClass = (b) => b.constructor.name === nameOrClass.name
+    return this.behaviours.filter( (isName) ? filterByName : filterByClass )[0]
+  }
+
   attach (behaviour, args) {
     this.behaviours.push(behaviour)
 
