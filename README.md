@@ -1,6 +1,8 @@
 behaviour.js
 ===
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/gamestdio/behaviour.js.svg)](https://greenkeeper.io/)
+
 [![Build Status](https://secure.travis-ci.org/gamestdio/behaviour.js.png?branch=master)](http://travis-ci.org/gamestdio/behaviour.js)
 
 Plugable [Entity Component System](https://en.wikipedia.org/wiki/Entity_component_system) for Games.
